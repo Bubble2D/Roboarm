@@ -1,5 +1,7 @@
+#include <MPU9250_WE.h>
+#include <Wire.h>
 
-
+const int delayTime = 200;
 static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt
 
 // Flex-Sensor Komponenten START
@@ -71,18 +73,77 @@ void loopFlex() {
 
 // Flex-Sensor Komponenten ENDE
 
+// MPU9250 Komponente START
+#define MPU9250_ADDR 0x68
+
+struct Winkel {
+  float pitch;  // X-Achse
+  float roll;   // Y-Achse
+} sendeWinkel;
+
+MPU9250_WE MPU9250 = MPU9250_WE(MPU9250_ADDR);
+int setupMPU9250() {
+  Wire.begin();
+
+  if (!MPU9250.init()) {
+    Serial.println("MPU9250 does not respond");
+  } else {
+    Serial.println("MPU9250 is connected");
+  }
+
+  Serial.println("Position you MPU9250 flat and don't move it - calibrating");
+  Serial.print(".");
+  delay(330);
+  Serial.print(".");
+  delay(330);
+  Serial.print(".");
+  delay(340);
+
+  //MPU9250.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
+  // oder auch folgende Methode
+  MPU9250.autoOffsets();
+  Serial.println("Done!");
+
+  MPU9250.setSampleRateDivider(5);
+  MPU9250.setAccRange(MPU9250_ACC_RANGE_2G);
+  MPU9250.enableAccDLPF(true);
+  MPU9250.setAccDLPF(MPU9250_DLPF_6);
+
+  MPU9250.enableGyrDLPF();
+  MPU9250.setGyrDLPF(MPU9250_DLPF_6);
+  MPU9250.setGyrRange(MPU9250_GYRO_RANGE_1000);
+
+  return 1;
+}
+
+
+
+
+// MPU9250 Komponente ENDE
+
 void setup() {
   Serial.begin(9600);
-  setupFlex(AnzahlFlex);
+  while (!setupFlex(AnzahlFlex)) {
+    Serial.println("Fehler bei Flex-Initialisierung");
+    Serial.println("Versuche erneut...");
+  }
+  Serial.println("Flex-Initialisierung erfolgreich");
+
+  while (!setupMPU9250()) {
+    Serial.println("Fehler bei Bewegungssensor");
+    Serial.println("Versuche erneut...");
+  }
+  Serial.println("Bewegungssensor erfolgreich gestartet");
 }
 
 void loop() {
   loopFlex();
+  
 
-  Serial.print(FlexArray[0]->getFlexWert());
+  Serial.print(MPU9250.getPitch());
   Serial.print("|");
-  Serial.print(FlexArray[1]->getFlexWert());
+  Serial.print(MPU9250.getRoll());
   Serial.println();
 
-  delay(200);
+  delay(delayTime);
 }
