@@ -1,0 +1,23 @@
+/*        TO DO
+//////////////////////////////
+          Object für Flex-Sensor erstellen 	✔
+                    Werte "übersetzen"   	✔
+
+          Bewegungs Sensorwerte speichern -> Libary & Docs gefunden: https://wolles-elektronikkiste.de/mpu9250-9-achsen-sensormodul-teil-1
+                     Werte "übersetzen" 
+
+          Fingerspreizung messen
+                     Werte "übersetzen"
+                     
+          Werte wireless transmitten
+              Flex-Sensor
+              Bewegungs-Sensor
+              Fingerspreizung / Urangutan
+
+          delete used data
+
+*/
+
+Probleme:
+
+1) // C++ kann keine Objekte wie Java in einem Array speichern, da OOP noch nicht implementiert
