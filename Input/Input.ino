@@ -2,7 +2,7 @@
 #include <Wire.h>
 
 const int delayTime = 200;
-static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt
+static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt FlexSensoren {A7 belegt durch Potentiometer}
 
 // Flex-Sensor Komponenten START
 class Flex {
@@ -69,7 +69,16 @@ void loopFlex() {
     int Messwert = FlexArray[i]->FlexMessen();
     FlexArray[i]->setFlexWert(Messwert);
   }
+  loopSpreitzen();
 }
+// Fingerspreitzen start
+int spreitzung;
+void loopSpreitzen() {
+  spreitzung = analogRead(AnalogPins[7]);
+  spreitzung = map(spreitzung, 0, 1023, 0, 180);
+}
+// Fingerspreitzen ende
+
 
 // Flex-Sensor Komponenten ENDE
 
@@ -115,10 +124,10 @@ int setupMPU9250() {
 
   return 1;
 }
-
-
-
-
+void loopMPU9250() {
+  sendeWinkel.pitch = MPU9250.getPitch();
+  sendeWinkel.roll = MPU9250.getRoll();
+}
 // MPU9250 Komponente ENDE
 
 void setup() {
@@ -138,12 +147,9 @@ void setup() {
 
 void loop() {
   loopFlex();
-  
+  loopMPU9250();
 
-  Serial.print(MPU9250.getPitch());
-  Serial.print("|");
-  Serial.print(MPU9250.getRoll());
-  Serial.println();
+  Serial.println(analogRead(A2));
 
   delay(delayTime);
 }
