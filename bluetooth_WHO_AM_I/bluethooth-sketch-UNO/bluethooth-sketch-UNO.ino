@@ -2,7 +2,7 @@
 
 
 SoftwareSerial hc05(10, 11);
-String sendMsg = "Hallo HC-06 am Nano";
+String sendMsg = "Pong an Nano";
 String receiveMsg = "";
 
 void setup() {
@@ -17,10 +17,10 @@ void loop() { // run over and over
   if (hc05.available()) {
     receiveMsg = hc05.readString();
     Serial.println(receiveMsg);
-    delay(20);
+    delay(1000);
     hc05.print(sendMsg);
   }
   if (Serial.available()) {
-    hc05.print(Serial.read());
+    hc05.print(Serial.readString());
   }
 }

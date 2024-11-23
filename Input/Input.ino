@@ -1,10 +1,13 @@
 #include <MPU9250_WE.h>
 #include <Wire.h>
+#include <SoftwareSerial.h>
 
-const int delayTime = 200;
-static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt FlexSensoren {A7 belegt durch Potentiometer}
+const int delayTime = 50;
+static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt FlexSensoren || A7 belegt durch Potentiometer
 
 // Flex-Sensor Komponenten START
+const int AnzahlFlex = 5;
+
 class Flex {
 public:
   int getPORT();
@@ -32,7 +35,7 @@ void Flex::setFlexWert(int NeuFlexWert) {
 }
 int Flex::FlexMessen() {
   // gibt die Beugung in Winkel von 0-180 Grad wieder
-  int16_t ObergrenzeAlt = 1023;
+  int16_t ObergrenzeAlt = 880;  // abweichung auf von 1023 auf ca. 880
   int16_t UntergrenzeAlt = 0;
   int16_t ObergrenzeNeu = 180;
   int16_t UntergrenzeNeu = 0;
@@ -43,7 +46,7 @@ int Flex::FlexMessen() {
   return FlexWert;
 }
 
-const int AnzahlFlex = 5;
+
 Flex* FlexArray[AnzahlFlex];
 int setupFlex(int AnzahlFlex) {
   switch (AnzahlFlex) {
@@ -64,22 +67,21 @@ int setupFlex(int AnzahlFlex) {
   }
   return 1;
 }
+
 void loopFlex() {
   for (int i = 0; i < AnzahlFlex; i++) {
     int Messwert = FlexArray[i]->FlexMessen();
     FlexArray[i]->setFlexWert(Messwert);
   }
-  loopSpreitzen();
+  loopHandoeffnung();
 }
-// Fingerspreitzen start
-int spreitzung;
-void loopSpreitzen() {
-  spreitzung = analogRead(AnalogPins[7]);
-  spreitzung = map(spreitzung, 0, 1023, 0, 180);
+// Handoeffnung start
+int Handoeffnung;
+void loopHandoeffnung() {
+  Handoeffnung = analogRead(AnalogPins[7]);
+  Handoeffnung = map(Handoeffnung, 0, 1023, 0, 100);
 }
-// Fingerspreitzen ende
-
-
+// Handoeffnung ende
 // Flex-Sensor Komponenten ENDE
 
 // MPU9250 Komponente START
@@ -100,7 +102,7 @@ int setupMPU9250() {
     Serial.println("MPU9250 is connected");
   }
 
-  Serial.println("Position you MPU9250 flat and don't move it - calibrating");
+  Serial.println("Position your MPU9250 flat and don't move it - calibrating");
   Serial.print(".");
   delay(330);
   Serial.print(".");
@@ -130,26 +132,154 @@ void loopMPU9250() {
 }
 // MPU9250 Komponente ENDE
 
+// Bluethooth Komponente START
+const uint8_t txPORT = 10;
+const uint8_t rxPORT = 11;
+
+SoftwareSerial HC05(txPORT, rxPORT);
+
+int setupHC05() {
+  HC05.begin(38400);
+  String sendMsg = "Ping";
+  String expectAnswer = "Pong";
+  String recieveMsg = "";
+
+  while (true) {
+    // Code um Verbindung zu überprüfen
+    if (!(HC05.available())) {
+      // keine Nachricht empfangen
+      HC05.print(sendMsg);
+      Serial.println(sendMsg);
+      delay(500);
+    } else {
+      // Nachricht empfangen
+      recieveMsg = HC05.readString();
+      Serial.println(recieveMsg);
+      if (recieveMsg.equals(expectAnswer)) {
+        return 1;
+      }
+    }
+    Serial.println("Fehler bei Bluetoothverbinung");
+    Serial.println("Versuche erneut");
+    delay(330);
+
+    Serial.print(".");
+    delay(330);
+    Serial.print(".");
+    delay(340);
+    Serial.print(".");
+    Serial.println("");
+  }
+}
+static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 21, 88, 89 };  // siehe readData
+int readData(int Index) {
+  /* Plan: Empfange von Index, sende Date
+          Indexliste:
+              A0 | 14 -> Flex 1
+              A1 | 15 -> Flex 2
+              A2 | 16 -> Flex 3
+              A3 | 17 -> Flex 4
+              A6 | 20 -> Flex 5
+              A7 | 21 -> Handöffnung
+              X  | 88 -> pitch
+              Y  | 89 -> roll
+              sonstiges -> 0 = sende erneut
+          */
+  int data;
+  switch (Index) {
+    case 0xe: // 14 bzw A0
+      data = FlexArray[0]->getFlexWert();
+      break;
+    case 0xf: // 15 bzw A1
+      data = FlexArray[1]->getFlexWert();
+      break;
+    case 0x10: // 16 bzw A2
+      data = FlexArray[2]->getFlexWert();
+      break;
+    case 0x11: // 17 bzw A3
+      data = FlexArray[3]->getFlexWert();
+      break;
+    case 0x14: // 20 bzw A6
+      data = FlexArray[4]->getFlexWert();
+      break;
+    case 0x15: // 21 bzw A7
+      data = Handoeffnung;
+      break;
+    case 88:
+      data = sendeWinkel.pitch;
+      break;
+    case 89:
+      data = sendeWinkel.roll;
+      break;
+    default:
+      data = -999;
+      break;
+  }
+  return data;
+}
+
+void loopHC05() {
+  if (HC05.available()) {
+    int request = (int) HC05.read();
+    // TO DO: request to int formaten
+      // Serial.print("Data request from: ");
+      // Serial.print(request);
+      // Serial.print("; ");
+    int data = readData(request);
+    HC05.write(data);
+    HC05.flush();
+      // Serial.print(" data: ");
+      // Serial.print(data);
+      // Serial.println(" ");
+  }
+}
+
+// Bluethooth Komponente ENDE
+/* Prüfe Sensoren
+  void pruefeSensoren() {
+    // In FlexSensor -> AnzahlFlex = 5;
+    for (int i = 0; i < 8; i++) {
+      Serial.print("Data from: ");
+      Serial.print(DataIndex[i]);
+      Serial.print(": ");
+      int hilf = readData(DataIndex[i]);
+      Serial.println(hilf);
+    }
+    Serial.println("************************************************");
+  }
+*/
+
 void setup() {
   Serial.begin(9600);
+  /**/
+  // FlexSensoren initialisiert
   while (!setupFlex(AnzahlFlex)) {
     Serial.println("Fehler bei Flex-Initialisierung");
     Serial.println("Versuche erneut...");
   }
   Serial.println("Flex-Initialisierung erfolgreich");
 
+  //Bewegungs/Neigungssensoren initialisiert
   while (!setupMPU9250()) {
     Serial.println("Fehler bei Bewegungssensor");
     Serial.println("Versuche erneut...");
   }
   Serial.println("Bewegungssensor erfolgreich gestartet");
+
+  // Bluetoothmodul initialisiert
+  setupHC05();
+  Serial.println("Bluetoothverbinung erfolgreich hergestellt");
 }
 
+//float td = 0;
 void loop() {
-  loopFlex();
-  loopMPU9250();
-
-  Serial.println(analogRead(A2));
-
-  delay(delayTime);
+ //float t1 = millis();
+ 
+  loopFlex();       //  loopFlex & loopMPU9250 brauchen 3-5 millisekunden zum ausführen
+  loopMPU9250();    //  loopHC05 ~3 millisekunden zum ausführen
+  loopHC05();       //  Schätzung: Abweichung in betrieb mit 10 millisekunden rechnen
+ 
+  //float t2 = millis();
+  //td = t2-t1;
+  //if (td > 0) {Serial.print("td: "); Serial.println(td);}
 }

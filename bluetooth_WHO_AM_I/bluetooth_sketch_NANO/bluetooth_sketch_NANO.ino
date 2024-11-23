@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
 SoftwareSerial hc06(10, 11);
-String sendMsg = "Hallo HC-05 am UNO";
+String sendMsg = "Ping an UNO";
 String receiveMsg = "";
 
 void setup() {
@@ -15,11 +15,11 @@ void loop() {  // run over and over
   if (hc06.available()) {
     receiveMsg = hc06.readString();
     Serial.println(receiveMsg);
-    delay(1000);
+    delay(20);
     hc06.print(sendMsg);
   }
 
   if (Serial.available()) {
-    hc06.print(Serial.read());
+    hc06.print(Serial.readString());
   }
 }

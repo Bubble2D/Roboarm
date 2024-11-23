@@ -4,10 +4,10 @@
                     Werte "übersetzen"   	✔
 
           Bewegungs Sensorwerte speichern -> Libary & Docs gefunden: https://wolles-elektronikkiste.de/mpu9250-9-achsen-sensormodul-teil-1
-                     Werte "übersetzen" 
+                     Werte "übersetzen" 	✔
 
           Fingerspreizung messen
-                     Werte "übersetzen"
+                     Werte "übersetzen"		✔
                      
           Werte wireless transmitten
               Flex-Sensor
@@ -20,4 +20,9 @@
 
 Probleme:
 
-1) // C++ kann keine Objekte wie Java in einem Array speichern, da OOP noch nicht implementiert
+1) FlexObjekte abspeichern bzw aufrufen // C++ kann keine Objekte wie Java in einem Array speichern, da OOP noch nicht implementiert
+2) Alter versuch der Datenübertragung 	// gescheitert: Empfangen/Einlesen dauert zu lange
+  					-> lag an Einlesen HC05.readString() = sehr langsam -> nutze read() und encode/decode algorhitmus
+  					String sendMsg = CreateSendMsg(); sendMsg hat Form von: <(A[0-7]-[0-180]){5}\(|)([-180-180]\(|)){2}>
+					bsp: <14-2|15-2|16-2|17-2|20-2|-0.00|0.00>
+3)befehl mySerial.parseInt() wäre perfekt -> auch zu langsam zurück zu read()			
