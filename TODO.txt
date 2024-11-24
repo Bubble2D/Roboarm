@@ -1,4 +1,4 @@
-/*        TO DO
+/*        TO DO - Input
 //////////////////////////////
           Object für Flex-Sensor erstellen 	✔
                     Werte "übersetzen"   	✔
@@ -9,14 +9,14 @@
           Fingerspreizung messen
                      Werte "übersetzen"		✔
                      
-          Werte wireless transmitten
-              Flex-Sensor
-              Bewegungs-Sensor
-              Fingerspreizung / Urangutan
-
-          delete used data
+          Werte wireless transmitten		✔
+              Flex-Sensor			✔
+              Bewegungs-Sensor			✔
+              Fingerspreizung / Urangutan	✔	
 
 */
+
+
 
 Probleme:
 
@@ -25,4 +25,17 @@ Probleme:
   					-> lag an Einlesen HC05.readString() = sehr langsam -> nutze read() und encode/decode algorhitmus
   					String sendMsg = CreateSendMsg(); sendMsg hat Form von: <(A[0-7]-[0-180]){5}\(|)([-180-180]\(|)){2}>
 					bsp: <14-2|15-2|16-2|17-2|20-2|-0.00|0.00>
-3)befehl mySerial.parseInt() wäre perfekt -> auch zu langsam zurück zu read()			
+3)befehl mySerial.parseInt() wäre perfekt -> auch zu langsam zurück zu read()	
+
+/*        TO DO - Output
+//////////////////////////////
+	
+
+
+*/
+
+Probleme:
+1) einzelne Kommunikation klappt, ABER -> "bitshift" Wertespeicherung verschiebt sich um 1 Slot Flex0 -> Flex 1; Flex1-> Flex2, … roll -> Flex0
+					   sobald alle Werte in Schleife abgefragt werdene	
+							-> gelöst aber ka warum?	
+2) negative Werte werden falsch angenommen -> z.b. "-1" -> "255" 

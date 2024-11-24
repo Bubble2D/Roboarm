@@ -187,22 +187,22 @@ int readData(int Index) {
           */
   int data;
   switch (Index) {
-    case 0xe: // 14 bzw A0
+    case 0xe:  // 14 bzw A0
       data = FlexArray[0]->getFlexWert();
       break;
-    case 0xf: // 15 bzw A1
+    case 0xf:  // 15 bzw A1
       data = FlexArray[1]->getFlexWert();
       break;
-    case 0x10: // 16 bzw A2
+    case 0x10:  // 16 bzw A2
       data = FlexArray[2]->getFlexWert();
       break;
-    case 0x11: // 17 bzw A3
+    case 0x11:  // 17 bzw A3
       data = FlexArray[3]->getFlexWert();
       break;
-    case 0x14: // 20 bzw A6
+    case 0x14:  // 20 bzw A6
       data = FlexArray[4]->getFlexWert();
       break;
-    case 0x15: // 21 bzw A7
+    case 0x15:  // 21 bzw A7
       data = Handoeffnung;
       break;
     case 88:
@@ -220,38 +220,60 @@ int readData(int Index) {
 
 void loopHC05() {
   if (HC05.available()) {
-    int request = (int) HC05.read();
-    // TO DO: request to int formaten
-      // Serial.print("Data request from: ");
-      // Serial.print(request);
-      // Serial.print("; ");
+    int request = (int)HC05.read();
     int data = readData(request);
+      if (request == 89 && data < 0) {
+        data = -1*data;
+      }
     HC05.write(data);
     HC05.flush();
-      // Serial.print(" data: ");
-      // Serial.print(data);
-      // Serial.println(" ");
   }
 }
 
 // Bluethooth Komponente ENDE
-/* Prüfe Sensoren
+
+//Prüfe Sensoren & gebe Werte aus
   void pruefeSensoren() {
-    // In FlexSensor -> AnzahlFlex = 5;
-    for (int i = 0; i < 8; i++) {
-      Serial.print("Data from: ");
-      Serial.print(DataIndex[i]);
-      Serial.print(": ");
-      int hilf = readData(DataIndex[i]);
-      Serial.println(hilf);
-    }
-    Serial.println("************************************************");
+    Serial.println("---------------------------------------------------------------------------------------------");
+    Serial.print("Flex0: ");
+    Serial.print(readData(DataIndex[0]));
+    Serial.print("\t");
+
+    Serial.print("Flex1: ");
+    Serial.print(readData(DataIndex[1]));
+    Serial.print("\t");
+
+    Serial.print("Flex2: ");
+    Serial.print(readData(DataIndex[2]));
+    Serial.print("\t");
+
+    Serial.print("Flex3: ");
+    Serial.print(readData(DataIndex[3]));
+    Serial.print("\t");
+
+    Serial.print("Flex4: ");
+    Serial.print(readData(DataIndex[4]));
+    Serial.print("\t");
+
+    Serial.println();
+    Serial.print("Potentiometer: ");
+    Serial.print(readData(DataIndex[5]));
+    Serial.print("\t\t");
+
+    Serial.print("pitch: ");
+    Serial.print(readData(DataIndex[6]));
+    Serial.print("\t");
+
+    Serial.print("roll: ");
+    Serial.print(readData(DataIndex[7]));
+
+    Serial.println();
+    Serial.println("---------------------------------------------------------------------------------------------");
   }
-*/
 
 void setup() {
   Serial.begin(9600);
-  /**/
+  Serial.println("Los geht's");
   // FlexSensoren initialisiert
   while (!setupFlex(AnzahlFlex)) {
     Serial.println("Fehler bei Flex-Initialisierung");
@@ -271,15 +293,16 @@ void setup() {
   Serial.println("Bluetoothverbinung erfolgreich hergestellt");
 }
 
-//float td = 0;
 void loop() {
- //float t1 = millis();
- 
-  loopFlex();       //  loopFlex & loopMPU9250 brauchen 3-5 millisekunden zum ausführen
-  loopMPU9250();    //  loopHC05 ~3 millisekunden zum ausführen
-  loopHC05();       //  Schätzung: Abweichung in betrieb mit 10 millisekunden rechnen
- 
-  //float t2 = millis();
-  //td = t2-t1;
-  //if (td > 0) {Serial.print("td: "); Serial.println(td);}
+  // float t1 = millis();
+
+  loopFlex();     //  loopFlex & loopMPU9250 brauchen 3-5 millisekunden zum ausführen
+  loopMPU9250();  //  loopHC05 ~3 millisekunden zum ausführen
+  loopHC05();     //  Schätzung: Abweichung in betrieb mit 10 millisekunden rechnen
+
+  // pruefeSensoren();
+
+  //  float t2 = millis();
+  //  float td = t2-t1;
+  //  if (td > 5) {Serial.print("td: "); Serial.println(td);}
 }

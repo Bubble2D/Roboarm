@@ -30,9 +30,107 @@ void setupHC05() {
   }
   delay(2000);
 }
-// Bluethooth Komponente ENDE
 
-static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 21, 88, 89 };  // siehe readData
+static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 21, 88, 89 };
+
+struct Data {
+  struct FlexData {
+    int Flex0;
+    int Flex1;
+    int Flex2;
+    int Flex3;
+    int Flex4;
+    int Potentiometer;
+  } readFlexData;
+
+  struct WinkelData {
+    int pitch;  //X-Achse
+    int roll;   //Y-Achse
+  } readWinkelData;
+
+} readData;
+
+void recieveData() {
+  for (int index : DataIndex) {
+    HC05.write(index);
+    HC05.flush();
+    if (HC05.available()) {
+      int data = HC05.read();
+      safeData(index, data);
+    }
+  }
+}
+
+void safeData(int index, int data) {
+  switch (index) {
+    case 14:
+      readData.readFlexData.Flex0 = data;
+      break;
+    case 15:
+      readData.readFlexData.Flex1 = data;
+      break;
+    case 16:
+      readData.readFlexData.Flex2 = data;
+      break;
+    case 17:
+      readData.readFlexData.Flex3 = data;
+      break;
+    case 20:
+      readData.readFlexData.Flex4 = data;
+      break;
+    case 21:
+      readData.readFlexData.Potentiometer = data;
+      break;
+    case 88:
+      if (data > 165) {
+        data = data - 255;
+      }
+      readData.readWinkelData.pitch = data;
+      break;
+    case 89:
+      readData.readWinkelData.roll = data;
+      break;
+  }
+}
+
+void printData() {
+  Serial.println("---------------------------------------------------------------------------------------------");
+  Serial.print("Flex0: ");
+  Serial.print(readData.readFlexData.Flex0);
+  Serial.print("\t");
+
+  Serial.print("Flex1: ");
+  Serial.print(readData.readFlexData.Flex1);
+  Serial.print("\t");
+
+  Serial.print("Flex2: ");
+  Serial.print(readData.readFlexData.Flex2);
+  Serial.print("\t");
+
+  Serial.print("Flex3: ");
+  Serial.print(readData.readFlexData.Flex3);
+  Serial.print("\t");
+
+  Serial.print("Flex4: ");
+  Serial.print(readData.readFlexData.Flex4);
+  Serial.print("\t");
+
+  Serial.println();
+  Serial.print("Potentiometer: ");
+  Serial.print(readData.readFlexData.Potentiometer);
+  Serial.print("\t\t");
+
+  Serial.print("pitch: ");
+  Serial.print(readData.readWinkelData.pitch);
+  Serial.print("\t");
+
+  Serial.print("roll: ");
+  Serial.print(readData.readWinkelData.roll);
+
+  Serial.println();
+  Serial.println("---------------------------------------------------------------------------------------------");
+}
+// Bluethooth Komponente ENDE
 
 void setup() {
   // put your setup code here, to run once:
@@ -42,18 +140,12 @@ void setup() {
 }
 
 void loop() {
-  for (int index : DataIndex) {
-    HC05.write(index);
-      Serial.print("Data request from: ");
-      Serial.print(index);
-      Serial.println(" ");
-    HC05.flush();
-    delay(50);
-  }
-
-  if (HC05.available()) {
-    Serial.println(HC05.read());
-  } 
-
-  delay(100);
+  // float t1 = millis();
+  recieveData();
+  // //printData();
+  // float t2 = millis();
+  // float td = t2 - t1;
+  // Serial.print("td: ");
+  // Serial.println(td);
+  // delay(20);
 }
