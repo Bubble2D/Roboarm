@@ -79,7 +79,7 @@ void loopFlex() {
 int Handoeffnung;
 void loopHandoeffnung() {
   Handoeffnung = analogRead(AnalogPins[7]);
-  Handoeffnung = map(Handoeffnung, 0, 1023, 0, 100);
+  Handoeffnung = map(Handoeffnung, 0, 1023, 0, 180);
 }
 // Handoeffnung ende
 // Flex-Sensor Komponenten ENDE
@@ -133,104 +133,104 @@ void loopMPU9250() {
 // MPU9250 Komponente ENDE
 
 // Bluethooth Komponente START
-const uint8_t txPORT = 10;
-const uint8_t rxPORT = 11;
+  const uint8_t txPORT = 10;
+  const uint8_t rxPORT = 11;
 
-SoftwareSerial HC05(txPORT, rxPORT);
+  SoftwareSerial HC05(txPORT, rxPORT);
 
-int setupHC05() {
-  HC05.begin(38400);
-  String sendMsg = "Ping";
-  String expectAnswer = "Pong";
-  String recieveMsg = "";
+  int setupHC05() {
+    HC05.begin(38400);
+    String sendMsg = "Ping";
+    String expectAnswer = "Pong";
+    String recieveMsg = "";
 
-  while (true) {
-    // Code um Verbindung zu überprüfen
-    if (!(HC05.available())) {
-      // keine Nachricht empfangen
-      HC05.print(sendMsg);
-      Serial.println(sendMsg);
-      delay(500);
-    } else {
-      // Nachricht empfangen
-      recieveMsg = HC05.readString();
-      Serial.println(recieveMsg);
-      if (recieveMsg.equals(expectAnswer)) {
-        return 1;
+    while (true) {
+      // Code um Verbindung zu überprüfen
+      if (!(HC05.available())) {
+        // keine Nachricht empfangen
+        HC05.print(sendMsg);
+        Serial.println(sendMsg);
+        delay(500);
+      } else {
+        // Nachricht empfangen
+        recieveMsg = HC05.readString();
+        Serial.println(recieveMsg);
+        if (recieveMsg.equals(expectAnswer)) {
+          return 1;
+        }
       }
+      Serial.println("Fehler bei Bluetoothverbinung");
+      Serial.println("Versuche erneut");
+      delay(330);
+
+      Serial.print(".");
+      delay(330);
+      Serial.print(".");
+      delay(340);
+      Serial.print(".");
+      Serial.println("");
     }
-    Serial.println("Fehler bei Bluetoothverbinung");
-    Serial.println("Versuche erneut");
-    delay(330);
-
-    Serial.print(".");
-    delay(330);
-    Serial.print(".");
-    delay(340);
-    Serial.print(".");
-    Serial.println("");
   }
-}
-static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 21, 88, 89 };  // siehe readData
-int readData(int Index) {
-  /* Plan: Empfange von Index, sende Date
-          Indexliste:
-              A0 | 14 -> Flex 1
-              A1 | 15 -> Flex 2
-              A2 | 16 -> Flex 3
-              A3 | 17 -> Flex 4
-              A6 | 20 -> Flex 5
-              A7 | 21 -> Handöffnung
-              X  | 88 -> pitch
-              Y  | 89 -> roll
-              sonstiges -> 0 = sende erneut
-          */
-  int data;
-  switch (Index) {
-    case 0xe:  // 14 bzw A0
-      data = FlexArray[0]->getFlexWert();
-      break;
-    case 0xf:  // 15 bzw A1
-      data = FlexArray[1]->getFlexWert();
-      break;
-    case 0x10:  // 16 bzw A2
-      data = FlexArray[2]->getFlexWert();
-      break;
-    case 0x11:  // 17 bzw A3
-      data = FlexArray[3]->getFlexWert();
-      break;
-    case 0x14:  // 20 bzw A6
-      data = FlexArray[4]->getFlexWert();
-      break;
-    case 0x15:  // 21 bzw A7
-      data = Handoeffnung;
-      break;
-    case 88:
-      data = sendeWinkel.pitch;
+  static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 21, 88, 89 };  // siehe readData
+  int readData(int Index) {
+    /* Plan: Empfange von Index, sende Date
+            Indexliste:
+                A0 | 14 -> Flex 1
+                A1 | 15 -> Flex 2
+                A2 | 16 -> Flex 3
+                A3 | 17 -> Flex 4
+                A6 | 20 -> Flex 5
+                A7 | 21 -> Handöffnung
+                X  | 88 -> pitch
+                Y  | 89 -> roll
+                sonstiges -> 0 = sende erneut
+            */
+    int data;
+    switch (Index) {
+      case 0xe:  // 14 bzw A0
+        data = FlexArray[0]->getFlexWert();
+        break;
+      case 0xf:  // 15 bzw A1
+        data = FlexArray[1]->getFlexWert();
+        break;
+      case 0x10:  // 16 bzw A2
+        data = FlexArray[2]->getFlexWert();
+        break;
+      case 0x11:  // 17 bzw A3
+        data = FlexArray[3]->getFlexWert();
+        break;
+      case 0x14:  // 20 bzw A6
+        data = FlexArray[4]->getFlexWert();
+        break;
+      case 0x15:  // 21 bzw A7
+        data = Handoeffnung;
+        break;
+      case 88:
+        data = sendeWinkel.pitch;
 
-      break;
-    case 89:
-      //data = sendeWinkel.roll;
-      data = map(sendeWinkel.roll, -180, 180, 0, 255);
-      break;
-    default:
-      data = -999;
-      break;
+        break;
+      case 89:
+        //data = sendeWinkel.roll;
+        data = map(sendeWinkel.roll, -180, 180, 0, 255);
+        break;
+      default:
+        data = -999;
+        break;
+    }
+    return data;
   }
-  return data;
-}
 
-void loopHC05() {
-  if (HC05.available()) {
-    int request = (int)HC05.read();
-    int data = readData(request);
-      if (request == 89 && data < 0) {
-        data = (-1*data);
-      }
-    HC05.write(data);
-    HC05.flush();
+  void loopHC05() {
+    if (HC05.available()) {
+      int request = (int)HC05.read();
+      int data = readData(request);
+        if (request == 89 && data < 0) {
+          data = (-1*data);
+        }
+      HC05.write(data);
+      HC05.flush();
+    }
   }
-}
 
 // Bluethooth Komponente ENDE
 

@@ -29,7 +29,10 @@ Probleme:
 
 /*        TO DO - Output
 //////////////////////////////
-	
+	Bewegung von einzelnen Fingern
+		Beugung
+		Handöffnung			
+	Drehung von Handmotoren			✔
 
 
 */
@@ -37,5 +40,6 @@ Probleme:
 Probleme:
 1) einzelne Kommunikation klappt, ABER -> "bitshift" Wertespeicherung verschiebt sich um 1 Slot Flex0 -> Flex 1; Flex1-> Flex2, … roll -> Flex0
 					   sobald alle Werte in Schleife abgefragt werdene	
-							-> gelöst aber ka warum?	
-2) negative Werte werden falsch angenommen -> z.b. "-1" -> "255" 
+							-> gelöst aber ka warum? 
+						-> hatte was mit dem Timing vom Nano zu tun; wenn dieser auch Werte ausgibt passiert "bitshift"	
+2) negative Werte werden falsch angenommen -> z.b. "-1" -> "255"  ✔
