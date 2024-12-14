@@ -207,9 +207,11 @@ int readData(int Index) {
       break;
     case 88:
       data = sendeWinkel.pitch;
+
       break;
     case 89:
-      data = sendeWinkel.roll;
+      //data = sendeWinkel.roll;
+      data = map(sendeWinkel.roll, -180, 180, 0, 255);
       break;
     default:
       data = -999;
@@ -223,7 +225,7 @@ void loopHC05() {
     int request = (int)HC05.read();
     int data = readData(request);
       if (request == 89 && data < 0) {
-        data = -1*data;
+        data = (-1*data);
       }
     HC05.write(data);
     HC05.flush();
@@ -232,7 +234,7 @@ void loopHC05() {
 
 // Bluethooth Komponente ENDE
 
-//Prüfe Sensoren & gebe Werte aus
+/* //Prüfe Sensoren & gebe Werte aus
   void pruefeSensoren() {
     Serial.println("---------------------------------------------------------------------------------------------");
     Serial.print("Flex0: ");
@@ -270,6 +272,7 @@ void loopHC05() {
     Serial.println();
     Serial.println("---------------------------------------------------------------------------------------------");
   }
+*/
 
 void setup() {
   Serial.begin(9600);
@@ -300,7 +303,7 @@ void loop() {
   loopMPU9250();  //  loopHC05 ~3 millisekunden zum ausführen
   loopHC05();     //  Schätzung: Abweichung in betrieb mit 10 millisekunden rechnen
 
-  // pruefeSensoren();
+  //pruefeSensoren();
 
   //  float t2 = millis();
   //  float td = t2-t1;

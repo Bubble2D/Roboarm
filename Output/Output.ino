@@ -88,6 +88,7 @@ void safeData(int index, int data) {
       readData.readWinkelData.pitch = data;
       break;
     case 89:
+      data = map(data, 0, 255, -180, 180);
       readData.readWinkelData.roll = data;
       break;
   }
@@ -142,10 +143,10 @@ void setup() {
 void loop() {
   // float t1 = millis();
   recieveData();
-  // //printData();
+  // printData();
   // float t2 = millis();
   // float td = t2 - t1;
   // Serial.print("td: ");
   // Serial.println(td);
-  // delay(20);
+  delay(100);
 }
