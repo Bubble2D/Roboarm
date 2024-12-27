@@ -14,6 +14,8 @@
               Bewegungs-Sensor			✔
               Fingerspreizung / Urangutan	✔	
 
+	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen
+
 */
 
 
@@ -43,3 +45,19 @@ Probleme:
 							-> gelöst aber ka warum? 
 						-> hatte was mit dem Timing vom Nano zu tun; wenn dieser auch Werte ausgibt passiert "bitshift"	
 2) negative Werte werden falsch angenommen -> z.b. "-1" -> "255"  ✔
+
+/*        TO DO - 3D Modelle
+//////////////////////////////
+	Bewegung von einzelnen Fingern
+		Beugung
+		Handöffnung			
+	Drehung von Handmotoren			✔
+
+	Halterung:
+		Slot für Servos
+	Kugellagerpins für Kugellager an entsprechende Stellen packen
+
+
+*/
+Probleme:
+	Drehung von teilen und Befestigung an gleichen Körpern -> Kugellager modelieren
