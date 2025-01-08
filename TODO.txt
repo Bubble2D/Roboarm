@@ -6,13 +6,13 @@
           Bewegungs Sensorwerte speichern -> Libary & Docs gefunden: https://wolles-elektronikkiste.de/mpu9250-9-achsen-sensormodul-teil-1
                      Werte "übersetzen" 	✔
 
-          Fingerspreizung messen
+          Fingerspreizung messen		(aufgrund von Mechanik entfernt) Ⅹ
                      Werte "übersetzen"		✔
                      
           Werte wireless transmitten		✔
               Flex-Sensor			✔
               Bewegungs-Sensor			✔
-              Fingerspreizung / Urangutan	✔	
+              Fingerspreizung 			Ⅹ	
 
 	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen
 
@@ -33,7 +33,7 @@ Probleme:
 //////////////////////////////
 	Bewegung von einzelnen Fingern
 		Beugung
-		Handöffnung			
+		Handöffnung			Ⅹ
 	Drehung von Handmotoren			✔
 
 
@@ -48,16 +48,21 @@ Probleme:
 
 /*        TO DO - 3D Modelle
 //////////////////////////////
-	Bewegung von einzelnen Fingern
-		Beugung
-		Handöffnung			
+	Bewegung von einzelnen Fingern		✔
+		Beugung				✔
+		Handöffnung			Ⅹ
 	Drehung von Handmotoren			✔
 
 	Halterung:
-		Slot für Servos
-	Kugellagerpins für Kugellager an entsprechende Stellen packen
+		Slot für Servos			✔
+	Kugellagerpins für Kugellager an entsprechende Stellen packen ✔
+	
+	Finger fest schrauben
+	Servo-Connector modellieren
+	Hand abrunden	
 
 
 */
 Probleme:
-	Drehung von teilen und Befestigung an gleichen Körpern -> Kugellager modelieren
+1) 	Drehung von teilen und Befestigung an gleichen Körpern -> Kugellager modelieren
+2)	Ansteurern der Finger ursprunglich durch Seile geplant -> mit Drehung Gefahr von Verknotung & Unnötiger Reibung => "four bar linkage" Mechanismus
