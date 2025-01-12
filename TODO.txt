@@ -14,7 +14,8 @@
               Bewegungs-Sensor			✔
               Fingerspreizung 			Ⅹ	
 
-	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen
+	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen ✔/2
+	LED's für Kallibrierung			?
 
 */
 
@@ -32,7 +33,7 @@ Probleme:
 /*        TO DO - Output
 //////////////////////////////
 	Bewegung von einzelnen Fingern
-		Beugung
+		Beugung				
 		Handöffnung			Ⅹ
 	Drehung von Handmotoren			✔
 
@@ -57,10 +58,17 @@ Probleme:
 		Slot für Servos			✔
 	Kugellagerpins für Kugellager an entsprechende Stellen packen ✔
 	
-	Finger fest schrauben
-	Servo-Connector modellieren
-	Hand abrunden	
+	Finger fest schrauben			✔
+	Servo-Connector modellieren		✔ 1/5
+	Hand abrunden				✔
 
+	
+	Handschuh
+		Idee: Armreif um Handschuh herum um Sensoren an Handschuh zu befestigen
+	
+	Armreif -> Konzept gestrichen; wird angeklebt
+	Ringe für FlexSensoren
+	LED's für Kallibrierung			?
 
 */
 Probleme:
