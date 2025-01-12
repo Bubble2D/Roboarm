@@ -1,24 +1,16 @@
 Quantität zu druckender Teile pro Finger
 
 	Ordner : Fingerteile
-		Finger Connector 	-> 2x	
-		Finger Connector001 	-> 2x
-		Finger Basis		-> 1x
-		Finger Fingerkuppe	-> 1x
+		Connector groß 		-> 2x		|D|
+		Connector klein		-> 2x		
+		Basis			-> 1x		|D|
+		Fingerkuppe		-> 1x		|D|
+		Connector Binder groß	-> 1x		|D|
+		Connector Binder klein 	-> 1x
 		
-		Ordner : Verbindungsstücke			(klappen irgendwie nicht zuhause)
-		Finger Connector Binder 	-> 1x
-		Finger Connector Binder001 	-> 1x
+		ServoPin (Fingertypspezifisch) -> 1x	|D|
 
-	Ordner : Pins
-		Finger BinderPin 			-> 4x
-		Finger ServoPin				-> 1x
 
-		Finger SchraubenPin			-> 1x
-		Finger SchraubenPin_Kopf		-> 1x
-
-		Finger SchraubenPin001			-> 2x
-		Finger SchraubenPin_Kopf001		-> 2x
-
-		Finger Servo SchraubenPin		-> 1x
-		Finger Servo SchraubenPin_Kopf		-> 1x
+Für Daumen gilt: nur mit "|D|" markierte Teile drucken
+Und besonderes Teil:
+		 Fingerkuppe Daumen	-> 1x		|D|
