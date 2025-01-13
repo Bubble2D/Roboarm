@@ -45,35 +45,18 @@ void recieveData() {
 }
 
 // Ansprechung von Servoobjekten
-
 struct Hand {
-  Finger FingerArray[] = {
   Servo pinky;
   Servo ring;
   Servo middle;
   Servo pointer;
   Servo thumb;
-};
 
-struct WinkelData {
-  Servo pitch;  //X-Achse
-  Servo roll;   //Y-Achse
-} Drehung;
-}
-Hand;
-
-void moveFinger(int FingerIndex, int Data) {
-   /* Indexliste:
-              0 -> pinky 
-              1 -> ring
-              2 -> middle
-              3 -> pointer
-              4 -> thumb
-          */ 
-
-  // TO-DO: muss noch getestet werden, wie stark die Finger angesteuert werden
-  Hand.FingerArray[FingerIndex].write(data);
-}
+  struct WinkelData {
+    Servo pitch;  //X-Achse
+    Servo roll;   //Y-Achse
+  } Drehung;
+} Hand;
 
 void move(int index, int data) {
   /* Indexliste:
@@ -86,26 +69,26 @@ void move(int index, int data) {
               Y  | 89 -> roll
               sonstiges -> 0 = sende erneut
           */
-
+  Serial.print("index: "); Serial.print(index); Serial.print("\t"); Serial.print("data: "); Serial.print(data);  Serial.print("\n"); 
   switch (index) {
     case 14:
-      moveFinger(0, data);
+      Hand.pinky.write(data);
       break;
     case 15:
       // müssen aufgrund von aufbau gespiegelt angesteuert werden
       data = 180 - data;
-      moveFinger(1, data);
+      Hand.ring.write(data);
       break;
     case 16:
       // müssen aufgrund von aufbau gespiegelt angesteuert werden
       data = 180 - data;
-      moveFinger(2, data);
+      Hand.middle.write(data);
       break;
     case 17:
-      moveFinger(3, data);
+      Hand.pointer.write(data);
       break;
     case 20:
-      moveFinger(4, data);
+      Hand.thumb.write(data);
       break;
     case 88:
       data = map(data, 0, 255, 0, 180);
@@ -120,10 +103,21 @@ void move(int index, int data) {
 
 // Bluethooth Komponente ENDE
 
+void setupHand() {
+  Hand.pinky.attach(2);
+  Hand.ring.attach(3);
+  Hand.middle.attach(4);
+  Hand.pointer.attach(5);
+  Hand.thumb.attach(6);
+  Hand.Drehung.pitch.attach(7);
+  Hand.Drehung.roll.attach(8);
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("Los geht's");
+  setupHand();
   setupHC05();
 }
 
@@ -135,5 +129,5 @@ void loop() {
   // float td = t2 - t1;
   // Serial.print("td: ");
   // Serial.println(td);
-  delay(100);
+  delay(delayTime);
 }

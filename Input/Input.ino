@@ -5,7 +5,16 @@
 const int delayTime = 50;
 static const uint8_t AnalogPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };  // A4 & A5 sind SDA & SCL pins || A0-A6 belegt FlexSensoren || A7 belegt durch Potentiometer
 static const uint8_t LEDPins[] = { 3, 5, 6, 9, 10 };
+static const uint8_t Bluetooth_LEDPIN = 4;
 
+static const uint8_t BUTTON_PIN = 2;
+bool ButtonPressed() {
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    delay(50);
+    return true;
+  }
+  return false;
+}
 
 // Flex-Sensor Komponenten START
 const int AnzahlFlex = 5;
@@ -17,6 +26,7 @@ public:
   void setFlexWert(int NeuFlexWert);
   int FlexMessen();
   void kalibrieren();
+  void kalibrieren(bool SKIP);
 
   Flex(int PORT, int newLED_PORT) {
     AnalogInputPORT = PORT;
@@ -55,15 +65,25 @@ int Flex::FlexMessen() {
 }
 void Flex::kalibrieren() {
   digitalWrite(LED_PORT, HIGH);
-  float t1, t2 = millis();
-  while ((t2 - t1) < 2000) {
+  delay(1000);
+  while (!ButtonPressed()) {
     FlexWert = analogRead(AnalogInputPORT);
     analogWrite(LED_PORT, FlexWert / 4);
     if (FlexWert > ObergrenzeAlt) { ObergrenzeAlt = FlexWert; }
-    if (FlexWert < UntergrenzeAlt) { ObergrenzeAlt = FlexWert; }
-    t2 = millis();
+    if (FlexWert < UntergrenzeAlt) { UntergrenzeAlt = FlexWert; }
   }
+  Serial.print("ObergrenzeAlt: ");
+  Serial.print(ObergrenzeAlt);
+  Serial.print("\t");
+  Serial.print("UntergrenzeAlt: ");
+  Serial.print(UntergrenzeAlt);
+  Serial.println();
   digitalWrite(LED_PORT, LOW);
+}
+void Flex::kalibrieren(bool SKIP) {
+  // durchschnitt von bereits kalibrierten Werten
+  ObergrenzeAlt = 853;
+  UntergrenzeAlt = 0;
 }
 
 Flex* FlexArray[AnzahlFlex];
@@ -121,9 +141,9 @@ int setupMPU9250() {
   Serial.print(".");
   delay(340);
 
-  //MPU9250.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
+  MPU9250.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
   // oder auch folgende Methode
-  MPU9250.autoOffsets();
+  //MPU9250.autoOffsets();
   Serial.println("Done!");
 
   MPU9250.setSampleRateDivider(5);
@@ -156,6 +176,7 @@ int setupHC05() {
   String recieveMsg = "";
 
   while (true) {
+    digitalWrite(Bluetooth_LEDPIN, LOW);
     // Code um Verbindung zu überprüfen
     if (!(HC05.available())) {
       // keine Nachricht empfangen
@@ -166,20 +187,27 @@ int setupHC05() {
       // Nachricht empfangen
       recieveMsg = HC05.readString();
       Serial.println(recieveMsg);
+      digitalWrite(Bluetooth_LEDPIN, HIGH);
       if (recieveMsg.equals(expectAnswer)) {
         return 1;
       }
     }
+    digitalWrite(Bluetooth_LEDPIN, HIGH);
     Serial.println("Fehler bei Bluetoothverbinung");
     Serial.println("Versuche erneut");
-    delay(330);
-
+    delay(250);
+    digitalWrite(Bluetooth_LEDPIN, LOW);
     Serial.print(".");
-    delay(330);
+    delay(250);
+    digitalWrite(Bluetooth_LEDPIN, HIGH);
     Serial.print(".");
-    delay(340);
+    delay(250);
+    digitalWrite(Bluetooth_LEDPIN, LOW);
     Serial.print(".");
     Serial.println("");
+    digitalWrite(Bluetooth_LEDPIN, HIGH);
+    delay(250);
+    digitalWrite(Bluetooth_LEDPIN, LOW);
   }
 }
 static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 88, 89 };  // siehe readData
@@ -230,9 +258,6 @@ void loopHC05() {
   if (HC05.available()) {
     int request = (int)HC05.read();
     int data = readData(request);
-    if (request == 89 && data < 0) {
-      data = (-1 * data);
-    }
     HC05.write(data);
     HC05.flush();
   }
@@ -240,7 +265,7 @@ void loopHC05() {
 
 // Bluethooth Komponente ENDE
 
-/* //Prüfe Sensoren & gebe Werte aus
+/**/ //Prüfe Sensoren & gebe Werte aus
   void pruefeSensoren() {
     Serial.println("---------------------------------------------------------------------------------------------");
     Serial.print("Flex0: ");
@@ -261,29 +286,26 @@ void loopHC05() {
 
     Serial.print("Flex4: ");
     Serial.print(readData(DataIndex[4]));
-    Serial.print("\t");
-
-    Serial.println();
-    Serial.print("Potentiometer: ");
-    Serial.print(readData(DataIndex[5]));
-    Serial.print("\t\t");
+    Serial.print("\n");
 
     Serial.print("pitch: ");
-    Serial.print(readData(DataIndex[6]));
+    Serial.print(readData(DataIndex[5]));
     Serial.print("\t");
 
     Serial.print("roll: ");
-    Serial.print(readData(DataIndex[7]));
+    Serial.print(readData(DataIndex[6]));
 
     Serial.println();
     Serial.println("---------------------------------------------------------------------------------------------");
   }
-*/
+/**/
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Los geht's");
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   // FlexSensoren initialisiert
+  Serial.println("Initialisiere Flex...");
   while (!setupFlex(AnzahlFlex)) {
     Serial.println("Fehler bei Flex-Initialisierung");
     Serial.println("Versuche erneut...");
@@ -298,7 +320,8 @@ void setup() {
   Serial.println("Bewegungssensor erfolgreich gestartet");
 
   // Bluetoothmodul initialisiert
-  // setupHC05();
+  pinMode(Bluetooth_LEDPIN, OUTPUT);
+  setupHC05();
   Serial.println("Bluetoothverbinung erfolgreich hergestellt");
 }
 
