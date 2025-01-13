@@ -1,0 +1,26 @@
+
+Handfläche		-> 1x
+Handgelenkt		-> 1x
+Gelenkhalterung		-> 2x
+
+
+Kugellager  x3 benötigt
+	InnenLager	-> 1x
+	Außenlager	-> 1x
+
+Quantität zu druckender Teile pro Finger	4x benötig + 1x Daumen
+
+	Ordner : Fingerteile
+		Connector groß 		-> 2x		|D|
+		Connector klein		-> 2x		
+		Basis			-> 1x		|D|
+		Fingerkuppe		-> 1x		|D|
+		Connector Binder groß	-> 1x		|D|
+		Connector Binder klein 	-> 1x
+		
+		ServoPin (Fingertypspezifisch) -> 1x	|D|
+
+
+Für Daumen gilt: nur mit "|D|" markierte Teile drucken
+Und besonderes Teil:
+		 Fingerkuppe Daumen	-> 1x		|D|
