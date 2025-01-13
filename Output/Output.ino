@@ -1,16 +1,17 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 
-const int delayTime = 100;
+const int delayTime = 50;
 
 // Bluethooth Komponente START
 const uint8_t rxPORT = 10;
 const uint8_t txPORT = 11;
+const uint8_t BAUDRATE = 115200;
 
 SoftwareSerial HC05(rxPORT, txPORT);
 
 void setupHC05() {
-  HC05.begin(38400);
+  HC05.begin(115200);
   String sendMsg = "Pong";
   String expectAnswer = "Ping";
   String recieveMsg = "";
@@ -69,7 +70,12 @@ void move(int index, int data) {
               Y  | 89 -> roll
               sonstiges -> 0 = sende erneut
           */
-  Serial.print("index: "); Serial.print(index); Serial.print("\t"); Serial.print("data: "); Serial.print(data);  Serial.print("\n"); 
+  Serial.print("index: ");
+  Serial.print(index);
+  Serial.print("\t");
+  Serial.print("data: ");
+  Serial.print(data);
+  Serial.print("\n");
   switch (index) {
     case 14:
       Hand.pinky.write(data);
@@ -104,6 +110,7 @@ void move(int index, int data) {
 // Bluethooth Komponente ENDE
 
 void setupHand() {
+  // Servos verbinden
   Hand.pinky.attach(2);
   Hand.ring.attach(3);
   Hand.middle.attach(4);
@@ -111,6 +118,14 @@ void setupHand() {
   Hand.thumb.attach(6);
   Hand.Drehung.pitch.attach(7);
   Hand.Drehung.roll.attach(8);
+  // Servos auf Nullposition bringen
+  Hand.pinky.write(0);
+  Hand.ring.write(0);
+  Hand.middle.write(0);
+  Hand.pointer.write(0);
+  Hand.thumb.write(0);
+  Hand.Drehung.pitch.write(0);
+  Hand.Drehung.roll.write(0);
 }
 
 void setup() {

@@ -59,6 +59,7 @@ void Flex::setFlexWert(int NeuFlexWert) {
 }
 int Flex::FlexMessen() {
   FlexWert = analogRead(AnalogInputPORT);
+  analogWrite(LED_PORT, FlexWert / 4);
   FlexWert = map(FlexWert, UntergrenzeAlt, ObergrenzeAlt, UntergrenzeNeu, ObergrenzeNeu);
 
   return FlexWert;
@@ -166,11 +167,12 @@ void loopMPU9250() {
 // Bluethooth Komponente START
 const uint8_t txPORT = 11;
 const uint8_t rxPORT = 12;
+const uint8_t BAUDRATE = 115200;
 
 SoftwareSerial HC05(txPORT, rxPORT);
 
 int setupHC05() {
-  HC05.begin(38400);
+  HC05.begin(115200);
   String sendMsg = "Ping";
   String expectAnswer = "Pong";
   String recieveMsg = "";
