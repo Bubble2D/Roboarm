@@ -14,8 +14,8 @@
               Bewegungs-Sensor			✔
               Fingerspreizung 			Ⅹ	
 
-	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen ✔/2
-	LED's für Kallibrierung			?
+	Kalibrierung von MPU9250 & FlexSensoren überarbeiten/einführen ✔
+	LED's für Kallibrierung			✔
 
 */
 
@@ -32,8 +32,8 @@ Probleme:
 
 /*        TO DO - Output
 //////////////////////////////
-	Bewegung von einzelnen Fingern
-		Beugung				
+	Bewegung von einzelnen Fingern		✔
+		Beugung				✔
 		Handöffnung			Ⅹ
 	Drehung von Handmotoren			✔
 
@@ -66,9 +66,9 @@ Probleme:
 	Handschuh
 		Idee: Armreif um Handschuh herum um Sensoren an Handschuh zu befestigen
 	
-	Armreif -> Konzept gestrichen; wird angeklebt
-	Ringe für FlexSensoren
-	LED's für Kallibrierung			?
+	Armreif -> Konzept gestrichen; wird angeklebt	✔
+	Ringe für FlexSensoren			
+	LED's für Kallibrierung			✔
 
 */
 Probleme:

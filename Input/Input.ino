@@ -59,7 +59,7 @@ void Flex::setFlexWert(int NeuFlexWert) {
 }
 int Flex::FlexMessen() {
   FlexWert = analogRead(AnalogInputPORT);
-  analogWrite(LED_PORT, FlexWert / 4);
+  analogWrite(LED_PORT, FlexWert/ 4);
   FlexWert = map(FlexWert, UntergrenzeAlt, ObergrenzeAlt, UntergrenzeNeu, ObergrenzeNeu);
 
   return FlexWert;
@@ -167,7 +167,6 @@ void loopMPU9250() {
 // Bluethooth Komponente START
 const uint8_t txPORT = 11;
 const uint8_t rxPORT = 12;
-const uint8_t BAUDRATE = 115200;
 
 SoftwareSerial HC05(txPORT, rxPORT);
 
@@ -215,16 +214,16 @@ int setupHC05() {
 static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 88, 89 };  // siehe readData
 int readData(int Index) {
   /* Plan: Empfange von Index, sende Date
-              Indexliste:
-                  A0 | 14 -> Flex 1
-                  A1 | 15 -> Flex 2
-                  A2 | 16 -> Flex 3
-                  A3 | 17 -> Flex 4
-                  A6 | 20 -> Flex 5
-                  X  | 88 -> pitch
-                  Y  | 89 -> roll
-                  sonstiges -> 0 = sende erneut
-              */
+                  Indexliste:
+                      A0 | 14 -> Flex 1
+                      A1 | 15 -> Flex 2
+                      A2 | 16 -> Flex 3
+                      A3 | 17 -> Flex 4
+                      A6 | 20 -> Flex 5
+                      X  | 88 -> pitch
+                      Y  | 89 -> roll
+                      sonstiges -> 0 = sende erneut
+                  */
   int data;
   switch (Index) {
     case 0xe:  // 14 bzw A0
@@ -264,43 +263,42 @@ void loopHC05() {
     HC05.flush();
   }
 }
-
 // Bluethooth Komponente ENDE
 
-/**/ //Prüfe Sensoren & gebe Werte aus
-  void pruefeSensoren() {
-    Serial.println("---------------------------------------------------------------------------------------------");
-    Serial.print("Flex0: ");
-    Serial.print(readData(DataIndex[0]));
-    Serial.print("\t");
+  //Prüfe Sensoren & gebe Werte aus
+void pruefeSensoren() {
+  Serial.println("---------------------------------------------------------------------------------------------");
+  Serial.print("Flex0: ");
+  Serial.print(readData(DataIndex[0]));
+  Serial.print("\t");
 
-    Serial.print("Flex1: ");
-    Serial.print(readData(DataIndex[1]));
-    Serial.print("\t");
+  Serial.print("Flex1: ");
+  Serial.print(readData(DataIndex[1]));
+  Serial.print("\t");
 
-    Serial.print("Flex2: ");
-    Serial.print(readData(DataIndex[2]));
-    Serial.print("\t");
+  Serial.print("Flex2: ");
+  Serial.print(readData(DataIndex[2]));
+  Serial.print("\t");
 
-    Serial.print("Flex3: ");
-    Serial.print(readData(DataIndex[3]));
-    Serial.print("\t");
+  Serial.print("Flex3: ");
+  Serial.print(readData(DataIndex[3]));
+  Serial.print("\t");
 
-    Serial.print("Flex4: ");
-    Serial.print(readData(DataIndex[4]));
-    Serial.print("\n");
+  Serial.print("Flex4: ");
+  Serial.print(readData(DataIndex[4]));
+  Serial.print("\n");
 
-    Serial.print("pitch: ");
-    Serial.print(readData(DataIndex[5]));
-    Serial.print("\t");
+  Serial.print("pitch: ");
+  Serial.print(readData(DataIndex[5]));
+  Serial.print("\t");
 
-    Serial.print("roll: ");
-    Serial.print(readData(DataIndex[6]));
+  Serial.print("roll: ");
+  Serial.print(readData(DataIndex[6]));
 
-    Serial.println();
-    Serial.println("---------------------------------------------------------------------------------------------");
-  }
-/**/
+  Serial.println();
+  Serial.println("---------------------------------------------------------------------------------------------");
+}
+
 
 void setup() {
   Serial.begin(9600);

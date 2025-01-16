@@ -1,12 +1,11 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 
-const int delayTime = 50;
+const int delayTime = 150;
 
 // Bluethooth Komponente START
 const uint8_t rxPORT = 10;
 const uint8_t txPORT = 11;
-const uint8_t BAUDRATE = 115200;
 
 SoftwareSerial HC05(rxPORT, txPORT);
 
@@ -70,30 +69,39 @@ void move(int index, int data) {
               Y  | 89 -> roll
               sonstiges -> 0 = sende erneut
           */
-  Serial.print("index: ");
-  Serial.print(index);
-  Serial.print("\t");
-  Serial.print("data: ");
-  Serial.print(data);
-  Serial.print("\n");
+  if (index == 14) {
+    Serial.print("index: ");
+    Serial.print(index);
+    Serial.print("\t");
+    Serial.print("data: ");
+    Serial.print(data);
+    Serial.print("\n");
+  }
+
+
   switch (index) {
     case 14:
+      if (data > 180) { data = 180; }
       Hand.pinky.write(data);
       break;
     case 15:
+      if (data > 180) { data = 180; }
       // müssen aufgrund von aufbau gespiegelt angesteuert werden
       data = 180 - data;
       Hand.ring.write(data);
       break;
     case 16:
+      if (data > 180) { data = 180; }
       // müssen aufgrund von aufbau gespiegelt angesteuert werden
       data = 180 - data;
       Hand.middle.write(data);
       break;
     case 17:
+      if (data > 180) { data = 180; }
       Hand.pointer.write(data);
       break;
     case 20:
+      if (data > 180) { data = 180; }
       Hand.thumb.write(data);
       break;
     case 88:
@@ -128,17 +136,23 @@ void setupHand() {
   Hand.Drehung.roll.write(0);
 }
 
+int timer;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("Los geht's");
   setupHand();
   setupHC05();
+
+  timer = millis();
 }
 
 void loop() {
   // float t1 = millis();
-  recieveData();
+  if (!HC05.overflow()) {
+    recieveData();
+  }
+
 
   // float t2 = millis();
   // float td = t2 - t1;

@@ -19,7 +19,7 @@
       <br> genutzte Programme in "https://github.com/Bubble2D/Roboarm/bluetooth_WHO_AM_I" zum Konfigurieren</li>
       <li><a href="https://wolles-elektronikkiste.de/mpu9250-9-achsen-sensormodul-teil-1"> Ansteuern von MPU9250 </a>
       <br> genutzt in "https://github.com/Bubble2D/Roboarm/Input", Nutzung von empfohlener Libary </li>
-      <li><a href="https://wolles-elektronikkiste.de/hc-05-und-hc-06-bluetooth-module"> Wie funktioniert Software Serial und TX|RX Protocol (I2C) </a></li>
+      <li><a href="https://wolles-elektronikkiste.de/serial-und-softwareserial"> Wie funktioniert Software Serial und TX|RX Protocol (I2C) </a></li>
       <li><a href="https://docs.arduino.cc/hardware/nano/">Datenblätter für Arduino Nano</a></li>
       <li><a href="https://www.youtube.com/playlist?list=PL_28gc6LBA1ve8Aamf1izQjNlqgtBWoLS">Tutorials für 3D-Moddelierung</a></li>
       <li><a href="https://domoticx.net/wp-content/uploads/catalog/elektro/motoren/servo-mini-towerpro-sg90-9g-details.jpg">Datenblatt Servo</a></li>
