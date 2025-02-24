@@ -59,9 +59,8 @@ void Flex::setFlexWert(int NeuFlexWert) {
 }
 int Flex::FlexMessen() {
   FlexWert = analogRead(AnalogInputPORT);
-  analogWrite(LED_PORT, FlexWert/ 4);
   FlexWert = map(FlexWert, UntergrenzeAlt, ObergrenzeAlt, UntergrenzeNeu, ObergrenzeNeu);
-
+  analogWrite(LED_PORT, FlexWert);
   return FlexWert;
 }
 void Flex::kalibrieren() {
