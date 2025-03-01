@@ -17,102 +17,102 @@ bool ButtonPressed() {
 }
 
 // Flex-Sensor Komponenten START
-const int AnzahlFlex = 5;
+  const int AnzahlFlex = 5;
 
-class Flex {
-public:
-  int getPORT();
-  int getFlexWert();
-  void setFlexWert(int NeuFlexWert);
-  int FlexMessen();
-  void kalibrieren();
-  void kalibrieren(bool SKIP);
+  class Flex {
+  public:
+    int getPORT();
+    int getFlexWert();
+    void setFlexWert(int NeuFlexWert);
+    int FlexMessen();
+    void kalibrieren();
+    void kalibrieren(bool SKIP);
 
-  Flex(int PORT, int newLED_PORT) {
-    AnalogInputPORT = PORT;
-    FlexWert = 0;
-    LED_PORT = newLED_PORT;
-    pinMode(LED_PORT, OUTPUT);
-    kalibrieren();
+    Flex(int PORT, int newLED_PORT) {
+      AnalogInputPORT = PORT;
+      FlexWert = 0;
+      LED_PORT = newLED_PORT;
+      pinMode(LED_PORT, OUTPUT);
+      kalibrieren();
+    }
+
+  private:
+    int AnalogInputPORT;
+    int16_t FlexWert;
+    int LED_PORT;
+
+    // gibt die Beugung in Winkel von 0-180 Grad wieder
+    int16_t ObergrenzeAlt = 0;      // gelesene Grenzen zuerst invertiert
+    int16_t UntergrenzeAlt = 1023;  // und in kallibrierung angepasst
+    int16_t ObergrenzeNeu = 180;
+    int16_t UntergrenzeNeu = 0;
+  };
+
+  int Flex::getPORT() {
+    return AnalogInputPORT;
   }
-
-private:
-  int AnalogInputPORT;
-  int16_t FlexWert;
-  int LED_PORT;
-
-  // gibt die Beugung in Winkel von 0-180 Grad wieder
-  int16_t ObergrenzeAlt = 0;      // gelesene Grenzen zuerst invertiert
-  int16_t UntergrenzeAlt = 1023;  // und in kallibrierung angepasst
-  int16_t ObergrenzeNeu = 180;
-  int16_t UntergrenzeNeu = 0;
-};
-
-int Flex::getPORT() {
-  return AnalogInputPORT;
-}
-int Flex::getFlexWert() {
-  return FlexWert;
-}
-void Flex::setFlexWert(int NeuFlexWert) {
-  FlexWert = NeuFlexWert;
-}
-int Flex::FlexMessen() {
-  FlexWert = analogRead(AnalogInputPORT);
-  FlexWert = map(FlexWert, UntergrenzeAlt, ObergrenzeAlt, UntergrenzeNeu, ObergrenzeNeu);
-  analogWrite(LED_PORT, FlexWert);
-  return FlexWert;
-}
-void Flex::kalibrieren() {
-  digitalWrite(LED_PORT, HIGH);
-  delay(1000);
-  while (!ButtonPressed()) {
+  int Flex::getFlexWert() {
+    return FlexWert;
+  }
+  void Flex::setFlexWert(int NeuFlexWert) {
+    FlexWert = NeuFlexWert;
+  }
+  int Flex::FlexMessen() {
     FlexWert = analogRead(AnalogInputPORT);
-    analogWrite(LED_PORT, FlexWert / 4);
-    if (FlexWert > ObergrenzeAlt) { ObergrenzeAlt = FlexWert; }
-    if (FlexWert < UntergrenzeAlt) { UntergrenzeAlt = FlexWert; }
+    FlexWert = map(FlexWert, UntergrenzeAlt, ObergrenzeAlt, UntergrenzeNeu, ObergrenzeNeu);
+    analogWrite(LED_PORT, FlexWert);
+    return FlexWert;
   }
-  Serial.print("ObergrenzeAlt: ");
-  Serial.print(ObergrenzeAlt);
-  Serial.print("\t");
-  Serial.print("UntergrenzeAlt: ");
-  Serial.print(UntergrenzeAlt);
-  Serial.println();
-  digitalWrite(LED_PORT, LOW);
-}
-void Flex::kalibrieren(bool SKIP) {
-  // durchschnitt von bereits kalibrierten Werten
-  ObergrenzeAlt = 853;
-  UntergrenzeAlt = 0;
-}
+  void Flex::kalibrieren() {
+    digitalWrite(LED_PORT, HIGH);
+    delay(1000);
+    while (!ButtonPressed()) {
+      FlexWert = analogRead(AnalogInputPORT);
+      analogWrite(LED_PORT, FlexWert / 4);
+      if (FlexWert > ObergrenzeAlt) { ObergrenzeAlt = FlexWert; }
+      if (FlexWert < UntergrenzeAlt) { UntergrenzeAlt = FlexWert; }
+    }
+    Serial.print("ObergrenzeAlt: ");
+    Serial.print(ObergrenzeAlt);
+    Serial.print("\t");
+    Serial.print("UntergrenzeAlt: ");
+    Serial.print(UntergrenzeAlt);
+    Serial.println();
+    digitalWrite(LED_PORT, LOW);
+  }
+  void Flex::kalibrieren(bool SKIP) {
+    // durchschnitt von bereits kalibrierten Werten
+    ObergrenzeAlt = 853;
+    UntergrenzeAlt = 0;
+  }
 
-Flex* FlexArray[AnzahlFlex];
-int setupFlex(int AnzahlFlex) {
-  switch (AnzahlFlex) {
-    case 5:
-      FlexArray[4] = new Flex(AnalogPins[6], LEDPins[4]);
-    case 4:
-      FlexArray[3] = new Flex(AnalogPins[3], LEDPins[3]);
-    case 3:
-      FlexArray[2] = new Flex(AnalogPins[2], LEDPins[2]);
-    case 2:
-      FlexArray[1] = new Flex(AnalogPins[1], LEDPins[1]);
-    case 1:
-      FlexArray[0] = new Flex(AnalogPins[0], LEDPins[0]);
-      break;
-    default:
-      return 0;
-      break;
+  Flex* FlexArray[AnzahlFlex];
+  int setupFlex(int AnzahlFlex) {
+    switch (AnzahlFlex) {
+      case 5:
+        FlexArray[4] = new Flex(AnalogPins[6], LEDPins[4]);
+      case 4:
+        FlexArray[3] = new Flex(AnalogPins[3], LEDPins[3]);
+      case 3:
+        FlexArray[2] = new Flex(AnalogPins[2], LEDPins[2]);
+      case 2:
+        FlexArray[1] = new Flex(AnalogPins[1], LEDPins[1]);
+      case 1:
+        FlexArray[0] = new Flex(AnalogPins[0], LEDPins[0]);
+        break;
+      default:
+        return 0;
+        break;
+    }
+    return 1;
   }
-  return 1;
-}
 
-void loopFlex() {
-  for (int i = 0; i < AnzahlFlex; i++) {
-    int Messwert = FlexArray[i]->FlexMessen();
-    FlexArray[i]->setFlexWert(Messwert);
+  void loopFlex() {
+    for (int i = 0; i < AnzahlFlex; i++) {
+      int Messwert = FlexArray[i]->FlexMessen();
+      FlexArray[i]->setFlexWert(Messwert);
+    }
   }
-}
 // Flex-Sensor Komponenten ENDE
 
 // MPU9250 Komponente START
@@ -141,9 +141,9 @@ int setupMPU9250() {
   Serial.print(".");
   delay(340);
 
-  MPU9250.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
+  //MPU9250.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
   // oder auch folgende Methode
-  //MPU9250.autoOffsets();
+  MPU9250.autoOffsets();
   Serial.println("Done!");
 
   MPU9250.setSampleRateDivider(5);
@@ -214,11 +214,11 @@ static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 88, 89 };  // siehe rea
 int readData(int Index) {
   /* Plan: Empfange von Index, sende Date
                   Indexliste:
-                      A0 | 14 -> Flex 1
-                      A1 | 15 -> Flex 2
-                      A2 | 16 -> Flex 3
-                      A3 | 17 -> Flex 4
-                      A6 | 20 -> Flex 5
+                      A0 | 14 -> Flex 1 -> pinky
+                      A1 | 15 -> Flex 2 -> ring
+                      A2 | 16 -> Flex 3 -> middle
+                      A3 | 17 -> Flex 4 -> pointer
+                      A6 | 20 -> Flex 5 -> thumb
                       X  | 88 -> pitch
                       Y  | 89 -> roll
                       sonstiges -> 0 = sende erneut

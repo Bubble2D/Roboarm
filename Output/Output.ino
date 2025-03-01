@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 
-const int delayTime = 150;
+const int delayTime = 200;
 
 // Bluethooth Komponente START
 const uint8_t rxPORT = 10;
@@ -31,7 +31,8 @@ void setupHC05() {
   delay(2000);
 }
 
-static const uint8_t DataIndex[] = { 14, 15, 16, 17, 20, 88, 89 };
+static const uint8_t DataIndex[] = {14, 15, 16, 17, 20, 88, 89};
+//static const uint8_t DataIndex[] = {17};
 
 void recieveData() {
   for (int index : DataIndex) {
@@ -41,6 +42,7 @@ void recieveData() {
       int data = HC05.read();
       move(index, data);
     }
+    delay(delayTime/2);
   }
 }
 
@@ -54,7 +56,8 @@ struct Hand {
 
   struct WinkelData {
     Servo pitch;  //X-Achse
-    Servo roll;   //Y-Achse
+    Servo roll_1;   //Y-Achse
+    Servo roll_2;   //Y-Achse
   } Drehung;
 } Hand;
 
@@ -69,15 +72,6 @@ void move(int index, int data) {
               Y  | 89 -> roll
               sonstiges -> 0 = sende erneut
           */
-  if (index == 14) {
-    Serial.print("index: ");
-    Serial.print(index);
-    Serial.print("\t");
-    Serial.print("data: ");
-    Serial.print(data);
-    Serial.print("\n");
-  }
-
 
   switch (index) {
     case 14:
@@ -110,8 +104,11 @@ void move(int index, int data) {
       break;
     case 89:
       data = map(data, 0, 255, 0, 180);
-      Hand.Drehung.roll.write(data);
+      Hand.Drehung.roll_2.write(data);
+      Hand.Drehung.roll_1.write(180-data);
       break;
+    default:
+      move(index, data);
   }
 }
 
@@ -125,26 +122,25 @@ void setupHand() {
   Hand.pointer.attach(5);
   Hand.thumb.attach(6);
   Hand.Drehung.pitch.attach(7);
-  Hand.Drehung.roll.attach(8);
+  Hand.Drehung.roll_1.attach(8);
+  Hand.Drehung.roll_2.attach(9);
   // Servos auf Nullposition bringen
   Hand.pinky.write(0);
   Hand.ring.write(0);
   Hand.middle.write(0);
   Hand.pointer.write(0);
   Hand.thumb.write(0);
-  Hand.Drehung.pitch.write(0);
-  Hand.Drehung.roll.write(0);
+  Hand.Drehung.pitch.write(90);
+  Hand.Drehung.roll_1.write(90);   
+  Hand.Drehung.roll_2.write(90);  
 }
 
-int timer;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("Los geht's");
   setupHand();
   setupHC05();
-
-  timer = millis();
 }
 
 void loop() {
